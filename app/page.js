@@ -1,101 +1,155 @@
-import Image from "next/image";
+"use client";
+import { fetchRecipes, toggleFavorite } from "@/state/recipeSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { IoTimeOutline } from "react-icons/io5";
+import { FaFire, FaHeart, FaRegHeart } from "react-icons/fa";
+import { BiDish } from "react-icons/bi";
+import FavoriteRecipe from "@/component/FavouriteRecipe";
 
-export default function Home() {
+const page = () => {
+  const dispatch = useDispatch();
+  const { recipes, loading, favorites } = useSelector((state) => state.recipes);
+  // console.log(recipes);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [like, setLike] = useState(false);
+  const [selectedCookTime, setSelectedCookTime] = useState("");
+
+  const uniqueCookTimes = Array.from(
+    new Set(
+      recipes.map((recipe) => recipe.cookTimeMinutes).filter((time) => time > 0)
+    )
+  );
+
+  const filteredRecipes = recipes
+    .filter((recipe) =>
+      recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((recipe) => {
+      if (!selectedCookTime) return true;
+      return recipe.cookTimeMinutes === parseInt(selectedCookTime);
+    });
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setSelectedCookTime("");
+  };
+
+  useEffect(() => {
+    dispatch(fetchRecipes());
+  }, [dispatch]);
+
+  if (loading) return <div className="flex items-center justify-center text-3xl font-semibold w-full h-full">Loading...</div>;
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div className="w-full h-full relative">
+      <h1 className="text-3xl font-semibold text-center my-4">Recipe</h1>
+      <div className="flex items-center justify-between flex-col md:flex-row gap-4 md:gap-0 px-8">
+        <input
+          type="search"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Search recipes"
+          className="bg-white border border-gray-300 rounded py-2 px-4"
         />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div className="flex justify-center items-center">
+          <label className="">Cooking Time:</label>
+          <select
+            value={selectedCookTime}
+            onChange={(e) => setSelectedCookTime(e.target.value)}
+            className="bg-white border border-gray-300 rounded py-2 px-4"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <option value="">All</option>
+
+            {uniqueCookTimes.map((time, index) => (
+              <option key={index} value={time}>
+                {time} minutes
+              </option>
+            ))}
+          </select>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <div
+          onClick={() => setLike(!like)}
+          className="border rounded-full size-8 flex items-center justify-center"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <FaHeart className="text-red-500 cursor-pointer" size={22} />
+        </div>
+      </div>
+
+      {like && (
+        <div className="w-screen h-screen bg-black/20 fixed z-10 top-0 overflow-y-auto">
+          <FavoriteRecipe setLike={setLike} />
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-4 px-4 mt-8">
+        {filteredRecipes.map(
+          ({
+            name,
+            id,
+            image,
+            servings,
+            ingredients,
+            cookTimeMinutes,
+            caloriesPerServing,
+            instructions,
+          }) => (
+            <div
+              key={id}
+              className="border rounded-3xl w-72 h-full flex flex-col items-center justify-center overflow-hidden relative"
+            >
+              <img
+                src={image}
+                alt={name}
+                className="w-full h-full rounded-3xl object-cover"
+              />
+
+              <div className="mx-4 px-4 py-2 bg-white border rounded-xl relative bottom-6 flex flex-col items-center">
+                <h2 className="text-lg font-medium">{name}</h2>
+
+                <p className="text-sm text-gray-400">{`${ingredients.length} ingredients`}</p>
+
+                <div className="flex items-center gap-4 mt-2">
+                  <span className="flex items-center gap-1">
+                    <IoTimeOutline className="text-orange-400 text-xl" />{" "}
+                    {cookTimeMinutes}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <FaFire className="text-orange-400 text-xl" />{" "}
+                    {caloriesPerServing}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <BiDish className="text-orange-400 text-xl" /> {servings}
+                  </span>
+                </div>
+              </div>
+
+              <div className="px-4 pb-4">
+                <h3 className="font-medium">Instructions:</h3>
+                <p className="line-clamp-2 text-sm text-gray-400">
+                  {instructions}
+                </p>
+              </div>
+
+              <button
+                onClick={() => dispatch(toggleFavorite(id))}
+                className={`border p-1 bg-orange-500 text-white rounded-full absolute top-4 right-4 ${
+                  favorites.includes(id)
+                    ? "text-red-600"
+                    : ""
+                }`}
+              >
+                {favorites.includes(id) ? <FaHeart size={22} /> : <FaRegHeart size={22} />}
+              </button>
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default page;
