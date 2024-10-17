@@ -21,7 +21,7 @@ const FavoriteRecipe = ({ setLike }) => {
                 <h1 className="text-xl font-semibold my-4">Favorite Recipes</h1>
                 <RxCross2 size={24} onClick={() => setLike(false)} className="cursor-pointer" />
             </div>
-            {favorites < 0 ? (
+            {favorites ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 place-content-center gap-4 px-4 mt-4">
                     {favoriteRecipes.map(
                         ({
