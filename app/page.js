@@ -6,8 +6,9 @@ import { IoTimeOutline } from "react-icons/io5";
 import { FaFire, FaHeart, FaRegHeart } from "react-icons/fa";
 import { BiDish } from "react-icons/bi";
 import FavoriteRecipe from "@/component/FavouriteRecipe";
+import Image from "next/image";
 
-const page = () => {
+const Page = () => {
   const dispatch = useDispatch();
   const { recipes, loading, favorites } = useSelector((state) => state.recipes);
   // console.log(recipes);
@@ -101,8 +102,10 @@ const page = () => {
               key={id}
               className="border rounded-3xl w-72 h-full flex flex-col items-center justify-center overflow-hidden relative"
             >
-              <img
+              <Image
                 src={image}
+                width={500}
+                height={500}
                 alt={name}
                 className="w-full h-full rounded-3xl object-cover"
               />
@@ -152,4 +155,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

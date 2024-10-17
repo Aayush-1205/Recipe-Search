@@ -6,6 +6,7 @@ import { FaFire, FaHeart, FaRegHeart } from 'react-icons/fa'
 import { BiDish } from 'react-icons/bi'
 import { RxCross2 } from 'react-icons/rx'
 import { toggleFavorite } from "@/state/recipeSlice";
+import Image from "next/image";
 
 const FavoriteRecipe = ({ setLike }) => {
     const dispatch = useDispatch();
@@ -37,8 +38,10 @@ const FavoriteRecipe = ({ setLike }) => {
                                 key={id}
                                 className="border rounded-3xl w-72 h-full flex flex-col items-center justify-center overflow-hidden relative"
                             >
-                                <img
+                                <Image
                                     src={image}
+                                    width={100}
+                                    height={100}
                                     alt={name}
                                     className="w-full h-full rounded-3xl object-cover"
                                 />
